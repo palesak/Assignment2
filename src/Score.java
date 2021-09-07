@@ -1,46 +1,46 @@
-package skeletonCodeAssgnmt2;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Score {
-	private int missedWords;
-	private int caughtWords;
-	private int gameScore;
-	
-	Score() {
-		missedWords=0;
-		caughtWords=0;
-		gameScore=0;
-	}
-		
-	// all getters and setters must be synchronized
-	
-	public int getMissed() {
-		return missedWords;
-	}
+    private int missedWords;
+    private int caughtWords;
+    private int gameScore;
 
-	public int getCaught() {
-		return caughtWords;
-	}
-	
-	public int getTotal() {
-		return (missedWords+caughtWords);
-	}
+    Score() {
+        missedWords=0;
+        caughtWords=0;
+        gameScore=0;
+    }
 
-	public int getScore() {
-		return gameScore;
-	}
-	
-	public void missedWord() {
-		missedWords++;
-	}
+    // all getters and setters must be synchronized
 
-	public void caughtWord(int length) {
-		caughtWords++;
-		gameScore+=length;
-	}
+    public int getMissed() {
+        return missedWords;
+    }
 
-	public void resetScore() {
-		caughtWords=0;
-		missedWords=0;
-		gameScore=0;
-	}
+    public int getCaught() {
+        return caughtWords;
+    }
+
+    public int getTotal() {
+        return (missedWords+caughtWords);
+    }
+
+    public int getScore() {
+        return gameScore;
+    }
+
+    public void missedWord() {
+        missedWords++;
+    }
+
+    public void caughtWord(int length) {
+        caughtWords++;
+        gameScore+=length;
+    }
+
+    public void resetScore() {
+        caughtWords=0;
+        missedWords=0;
+        gameScore=0;
+    }
 }
