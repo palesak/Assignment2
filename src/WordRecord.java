@@ -5,16 +5,13 @@ public class WordRecord {
     private int maxY;
     private boolean missed;
 
-
     private int fallingSpeed;
     private static int maxWait=1500;
     private static int minWait=100;
 
     public static WordDictionary dict;
 
-
-
-    WordRecord() {
+    public WordRecord() {
         text="";
         x=0;
         y=0;
@@ -23,12 +20,12 @@ public class WordRecord {
         fallingSpeed=(int)(Math.random() * (maxWait-minWait)+minWait);
     }
 
-    WordRecord(String text) {
+    public WordRecord(String text) {
         this();
         this.text=text;
     }
 
-    WordRecord(String text,int x, int maxY) {
+    public WordRecord(String text,int x, int maxY) {
         this(text);
         this.x=x;
         this.maxY=maxY;
@@ -71,6 +68,7 @@ public class WordRecord {
         setY(y);
         setX(x);
     }
+
     public synchronized void resetPos() {
         setY(0);
     }
@@ -94,7 +92,6 @@ public class WordRecord {
             return false;
     }
 
-
     public synchronized  void drop(int inc) {
         setY(y+inc);
     }
@@ -102,4 +99,5 @@ public class WordRecord {
     public synchronized  boolean missed() {
         return missed;
     }
+
 }

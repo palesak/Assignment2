@@ -1,38 +1,39 @@
 
-/*public class WordThread implements Runnable {
-
+/**
+ * Created by Jethro Muller on 2014/08/20.
+ * Threads the WordRecord objects to allow for concurrent access and movement.
+ */
+public class WordThread implements Runnable {
     private WordRecord word;
-    private WordController wordController;
+    private TheGame theGame;
 
-    public WordThread(WordRecord word, WordController wordController) {
+    public WordThread(WordRecord word, TheGame theGame) {
         super();
         this.word = word;
-        this.wordController = wordController;
+        this.theGame = theGame;
     }
-
 
     public synchronized void reset() {
         word.resetWord();
     }
 
-
     @Override
     public void run() {
         //If the game is still being played
-        while (!wordController.ended()) {
+        while (!theGame.ended()) {
             // if the word was missed.
             if (word.missed()) {
-                wordController.missedWord();
+                theGame.missedWord();
                 word.resetWord();
-                wordController.setChanged();
+                theGame.setChanged();
                 //If the game is paused, don't do anything.
-            } else if (wordController.isPaused()) {
+            } else if (theGame.isPaused()) {
                 continue;
                 //The word wasn't missed and the game isn't paused
                 //Drop the word and update the scores.
             } else {
                 word.drop(1);
-                wordController.updateScoreLabels();
+                theGame.updateScoreLabels();
             }
             try {
                 //Waits until the next movement time.
@@ -42,4 +43,4 @@
             }
         }
     }
-}*/
+}

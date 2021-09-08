@@ -9,7 +9,7 @@ import java.util.Scanner;
 public class WordApp {
     //shared variables
     static int noWords = 4;
-    static int totalWords;
+    public static int totalWords;
 
     static int frameX = 1000;
     static int frameY = 600;
@@ -23,20 +23,23 @@ public class WordApp {
     static Score score = new Score();
 
     static WordPanel w;
+
     static JLabel[] labels;
-    static WordController wordController;
+
+    static TheGame theGame;
 
     public static void setupGUI(int frameX, int frameY, int yLimit) {
         // Frame init and dimensions
         JFrame frame = new JFrame("WordGame");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setSize(frameX, frameY);
+
         JPanel g = new JPanel();
         g.setLayout(new BoxLayout(g, BoxLayout.PAGE_AXIS));
         g.setSize(frameX, frameY);
 
 
-        w = new WordPanel(words, yLimit, wordController);
+        w = new WordPanel(words, yLimit, theGame);
         w.setSize(frameX, yLimit + 100);
         g.add(w);
 
@@ -46,23 +49,24 @@ public class WordApp {
         JLabel caught = new JLabel("Caught: " + score.getCaught() + "    ");
         JLabel missed = new JLabel("Missed:" + score.getMissed() + "    ");
         JLabel scr = new JLabel("Score:" + score.getScore() + "    ");
-
-        labels = new JLabel[] {caught, missed, scr}; // incorrect};
+        //JLabel incorrect = new JLabel("Incorrect Attempts:" + score.getIncorrectWords() + "    ");
+        labels = new JLabel[] {caught, missed, scr};
+        //incorrect};
         txt.add(caught);
         txt.add(missed);
         txt.add(scr);
-
+        //txt.add(incorrect);
 
         //Gets the text entry from the textfield and compares it to the words.
 
         final JTextField textEntry = new JTextField("", 20);
         textEntry.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (!wordController.isPaused() && wordController.isRunning()) {
+                if (!theGame.isPaused() && theGame.isRunning()) {
                     String text = textEntry.getText();
-                    if (!wordController.checkWord(text)) {
-
-                        wordController.setChanged();
+                    if (!theGame.checkWord(text)) {
+                        //score.inncorrectWord();
+                        theGame.setChanged();
                     }
                 }
                 textEntry.setText("");
@@ -80,17 +84,16 @@ public class WordApp {
 
         // add the listener to the jbutton to handle the "pressed" event
         startB.addActionListener(new ActionListener() {
-            //public void actionPerformed(ActionEvent e) {
-                public void actionPerformed(ActionEvent e) {
-
-                    if (!wordController.isRunning()) {
-                        new Thread(w).start();
-                    } else if (wordController.isPaused()) {
-                        wordController.setPaused();
-                    }
-                    textEntry.requestFocus();  //return focus to the text entry field
+            public void actionPerformed(ActionEvent e) {
+                //Starts the panel's run() in a separate thread.
+                if (!theGame.isRunning()) {
+                    new Thread(w).start();
+                } else if (theGame.isPaused()) {
+                    theGame.setPaused();
                 }
-            });
+                textEntry.requestFocus();  //return focus to the text entry field
+            }
+        });
 
         JButton pauseB = new JButton("Pause");
 
@@ -98,8 +101,8 @@ public class WordApp {
         pauseB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // If the game is running. Set its state to paused.
-                if (wordController.isRunning()) {
-                    wordController.setPaused();
+                if (theGame.isRunning()) {
+                    theGame.setPaused();
                 }
                 textEntry.setText("");
                 textEntry.requestFocus();  //return focus to the text entry field
@@ -112,8 +115,8 @@ public class WordApp {
         resetB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Resets the ccurrent game board.
-                if (wordController.isRunning()) {
-                    wordController.endGame();
+                if (theGame.isRunning()) {
+                    theGame.endGame();
                 }
             }
         });
@@ -124,8 +127,8 @@ public class WordApp {
         quitB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Resets the ccurrent game board.
-                if (wordController.isRunning()) {
-                    wordController.endGame();
+                if (theGame.isRunning()) {
+                    theGame.endGame();
                 }
                 System.exit(0);
             }
@@ -144,6 +147,10 @@ public class WordApp {
         //frame.pack();  // don't do this - packs it into small space
         frame.setVisible(true);
 
+    }
+
+    public static int getTotalWords() {
+        return totalWords;
     }
 
     public static String[] getDictFromFile(String filename) {
@@ -190,7 +197,7 @@ public class WordApp {
         for (int i = 0; i < noWords; i++) {
             words[i] = new WordRecord(dict.getNewWord(), i * x_inc, yLimit);
         }
-        wordController = new WordController();
+        theGame = new TheGame();
 
         setupGUI(frameX, frameY, yLimit);
         //Start WordPanel thread - for redrawing animation

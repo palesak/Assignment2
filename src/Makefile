@@ -14,7 +14,7 @@ CLASSES = \
     	WordApp.java \
     	WordPanel.java \
     	WordThread.java \
-    	WordController.java \
+    	TheGame.java \
     	WordRecord.java \
     	WordDictionary.java \
 

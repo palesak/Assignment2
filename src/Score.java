@@ -25,6 +25,11 @@ public class Score {
         return (missedWords+caughtWords);
     }
 
+    /*public int getMaxNum()
+    {
+        return maxWords;
+    }*/
+
     public int getScore() {
         return gameScore;
     }
