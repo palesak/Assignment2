@@ -1,13 +1,19 @@
+/**
+ * This is where the app comes together, the buttons are drawn and the vistuals are drawn
+ *
+ * @author Palesa Khoali
+ * 10 September 2021
+ */
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Scanner;
-//model is separate from the view.
+
 
 public class WordApp {
-    //shared variables
     static int noWords = 4;
     public static int totalWords;
 
@@ -15,28 +21,25 @@ public class WordApp {
     static int frameY = 600;
     static int yLimit = 480;
 
-    static WordDictionary dict = new WordDictionary();
-    //use default dictionary, to read from file eventually
-
+    static WordDictionary word = new WordDictionary();
     static WordRecord[] words;
-    static volatile boolean done;  //must be volatile
+    static boolean done;
     static Score score = new Score();
 
     static WordPanel w;
-
     static JLabel[] labels;
-
     static TheGame theGame;
 
+
     public static void setupGUI(int frameX, int frameY, int yLimit) {
-        // Frame init and dimensions
+
         JFrame frame = new JFrame("WordGame");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(frameX, frameY);
 
         JPanel g = new JPanel();
         g.setLayout(new BoxLayout(g, BoxLayout.PAGE_AXIS));
-        g.setSize(frameX, frameY);
+        g.setSize(frameX,frameY);
 
 
         w = new WordPanel(words, yLimit, theGame);
@@ -46,26 +49,24 @@ public class WordApp {
 
         JPanel txt = new JPanel();
         txt.setLayout(new BoxLayout(txt, BoxLayout.LINE_AXIS));
+
+
         JLabel caught = new JLabel("Caught: " + score.getCaught() + "    ");
         JLabel missed = new JLabel("Missed:" + score.getMissed() + "    ");
         JLabel scr = new JLabel("Score:" + score.getScore() + "    ");
-        //JLabel incorrect = new JLabel("Incorrect Attempts:" + score.getIncorrectWords() + "    ");
+
         labels = new JLabel[] {caught, missed, scr};
-        //incorrect};
+
         txt.add(caught);
         txt.add(missed);
         txt.add(scr);
-        //txt.add(incorrect);
-
-        //Gets the text entry from the textfield and compares it to the words.
 
         final JTextField textEntry = new JTextField("", 20);
         textEntry.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                if (!theGame.isPaused() && theGame.isRunning()) {
+                if (!theGame.pauseGame()) {
                     String text = textEntry.getText();
                     if (!theGame.checkWord(text)) {
-                        //score.inncorrectWord();
                         theGame.setChanged();
                     }
                 }
@@ -82,40 +83,39 @@ public class WordApp {
         b.setLayout(new BoxLayout(b, BoxLayout.LINE_AXIS));
         JButton startB = new JButton("Start");
 
-        // add the listener to the jbutton to handle the "pressed" event
+
         startB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //Starts the panel's run() in a separate thread.
-                if (!theGame.isRunning()) {
+                if (!theGame.inPlay()) {
                     new Thread(w).start();
-                } else if (theGame.isPaused()) {
-                    theGame.setPaused();
+                } else if (theGame.pauseGame()) {
+                    theGame.changePause();
                 }
-                textEntry.requestFocus();  //return focus to the text entry field
+                textEntry.requestFocus();
             }
         });
 
         JButton pauseB = new JButton("Pause");
 
-        // add the listener to the jbutton to handle the "pressed" event
+
         pauseB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // If the game is running. Set its state to paused.
-                if (theGame.isRunning()) {
-                    theGame.setPaused();
+
+                if (theGame.inPlay()) {
+                    theGame.changePause();
                 }
                 textEntry.setText("");
-                textEntry.requestFocus();  //return focus to the text entry field
+                textEntry.requestFocus();
             }
         });
 
         JButton resetB = new JButton("Reset");
 
-        // add the listener to the jbutton to handle the "pressed" event
+
         resetB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Resets the ccurrent game board.
-                if (theGame.isRunning()) {
+
+                if (theGame.inPlay()) {
                     theGame.endGame();
                 }
             }
@@ -123,11 +123,10 @@ public class WordApp {
 
         JButton quitB = new JButton("Quit");
 
-        // add the listener to the jbutton to handle the "pressed" event
+
         quitB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // Resets the ccurrent game board.
-                if (theGame.isRunning()) {
+                if (theGame.inPlay()) {
                     theGame.endGame();
                 }
                 System.exit(0);
@@ -141,10 +140,9 @@ public class WordApp {
 
         g.add(b);
 
-        frame.setLocationRelativeTo(null);  // Center window on screen.
-        frame.add(g); //add contents to window
+        frame.setLocationRelativeTo(null);
+        frame.add(g);
         frame.setContentPane(g);
-        //frame.pack();  // don't do this - packs it into small space
         frame.setVisible(true);
 
     }
@@ -153,53 +151,48 @@ public class WordApp {
         return totalWords;
     }
 
-    public static String[] getDictFromFile(String filename) {
-        String[] dictStr = null;
-        try {
-            Scanner dictReader = new Scanner(new FileInputStream(filename));
-            int dictLength = dictReader.nextInt();
-            //System.out.println("read '" + dictLength+"'");
+    public static String[] getDict(String filename)throws Exception {
+        String[] str = null;
+        Scanner reader = new Scanner(new FileInputStream(filename));
+        int len = reader.nextInt();
 
-            dictStr = new String[dictLength];
-            for (int i = 0; i < dictLength; i++) {
-                dictStr[i] = dictReader.next();
-                //System.out.println(i+ " read '" + dictStr[i]+"'"); //for checking
-            }
-            dictReader.close();
-        } catch (IOException e) {
-            System.err.println(
-                    "Problem reading file " + filename + " default dictionary will be used");
+        str = new String[len];
+        for (int i = 0; i < len; i++) {
+           str[i] = reader.next();
         }
-        return dictStr;
+        reader.close();
+
+        return str;
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)throws Exception {
+
         done = true;
-        //deal with command line arguments
-        totalWords = Integer.parseInt(args[0]);  //total words to fall
-        noWords = Integer.parseInt(args[1]); // total words falling at any point
-        assert (totalWords >= noWords); // this could be done more neatly
-        String[] tmpDict = getDictFromFile(args[2]); //file of words
-        if (tmpDict != null) {
-            dict = new WordDictionary(tmpDict);
+
+        totalWords = Integer.parseInt(args[0]);
+        noWords = Integer.parseInt(args[1]);
+        assert (totalWords >= noWords);
+        String[] temp = getDict(args[2]);
+
+
+        if (temp != null) {
+            word = new WordDictionary(temp);
         }
 
-        WordRecord.dict = dict; //set the class dictionary for the words.
+        WordRecord.dictionary = word;
 
-        words = new WordRecord[noWords];  //shared array of current words
-
-        //[snip]
+        words = new WordRecord[noWords];
 
         int x_inc = frameX / noWords;
-        //initialize shared array of current words
 
         for (int i = 0; i < noWords; i++) {
-            words[i] = new WordRecord(dict.getNewWord(), i * x_inc, yLimit);
+            words[i] = new WordRecord(word.getNewWord(), i * x_inc, yLimit);
         }
+
         theGame = new TheGame();
 
         setupGUI(frameX, frameY, yLimit);
-        //Start WordPanel thread - for redrawing animation
+
     }
 }

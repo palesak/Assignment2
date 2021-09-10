@@ -1,3 +1,9 @@
+/**
+ * This class records the score and updates if words are missed or caught
+ * @author Palesa Khoali
+ * @date 10 September 2021
+ */
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Score {
@@ -25,10 +31,6 @@ public class Score {
         return (missedWords+caughtWords);
     }
 
-    /*public int getMaxNum()
-    {
-        return maxWords;
-    }*/
 
     public int getScore() {
         return gameScore;

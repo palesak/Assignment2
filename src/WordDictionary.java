@@ -12,12 +12,10 @@ public class WordDictionary {
         for (int i=0;i<size;i++) {
             theDict[i] = tmp[i];
         }
-
     }
 
     public WordDictionary() {
         size=theDict.length;
-
     }
 
     public synchronized String getNewWord() {

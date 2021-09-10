@@ -1,35 +1,26 @@
-JFLAGS = -g
-JC = javac
-MAIN_CLASS = WordApp
-CONCURRENT_WORDS = 4
-TOTAL_WORDS = 25
-DICT_FILE = example_dict.txt
+# Palesa Khoali
+# KHLPAL002
+# CSC2002S
 
 .SUFFIXES: .java .class
+JAVAC = javac -g
 .java.class:
-	$(JC) $(JFLAGS) $*.java
+	$(JAVAC) $*.java
 
 CLASSES = \
 	Score.java \
-    	WordApp.java \
-    	WordPanel.java \
-    	WordThread.java \
-    	TheGame.java \
-    	WordRecord.java \
-    	WordDictionary.java \
+	WordApp.java \
+	WordPanel.java \
+	TheGame.java \
+	WordRecord.java \
+	WordDictionary.java \
 
 default: classes
 
 classes: $(CLASSES:.java=.class)
 
 clean:
-	$(RM) *.class
+	rm *.class
 
 run:
-	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) $(FILE)
-
-run-default:
-	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) ../$(DICT_FILE)
-
-run-no-file:
-	java $(MAIN_CLASS) $(TOTAL_WORDS) $(CONCURRENT_WORDS) None
+	java $(MAIN_CLASS)
